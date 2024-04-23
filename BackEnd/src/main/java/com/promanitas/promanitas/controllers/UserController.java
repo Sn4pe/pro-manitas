@@ -11,8 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:8080")
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/admin/usuario")
 public class UserController {
     @Autowired
     IUserService userService;
