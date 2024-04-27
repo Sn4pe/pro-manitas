@@ -30,7 +30,7 @@ export default {
       </div>
     </div>
     <div class="row">
-      <div v-for="user of users" :key="user.id" class="col-md-6 col-xl-4 col-12 pt-3  justify-content-around d-flex">
+      <div v-for="user of users" :key="user.id" class="">
         <div class="card" style="width: 18rem;">
           <div class="card-body">
             <h5 class="card-title">{{user.name}}</h5>
