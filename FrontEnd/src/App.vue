@@ -1,13 +1,18 @@
 <template>
-
-  <h1>ProManitas</h1>
-  <router-view class="router-vista"/>
+  <div class="flex flex-col min-h-[100vh]">
+    <Header/>
+    <router-view class="router-vista"/>
+    <Footer></Footer>
+  </div>
 </template>
 
 <script>
+import Footer from "@/views/Footer.vue";
+import Header from "@/views/Header.vue";
+
 export default {
   name: "app",
-  components: {},
+  components: {Header, Footer},
 };
 </script>
 
