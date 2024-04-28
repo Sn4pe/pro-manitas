@@ -2,7 +2,7 @@
   <div class="flex flex-col min-h-[100vh]">
     <Header/>
     <router-view class="router-vista"/>
-    <Footer></Footer>
+    <Footer/>
   </div>
 </template>
 

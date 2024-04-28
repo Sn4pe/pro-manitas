@@ -39,8 +39,8 @@
       <a class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
         FAQ
       </a>
-      <a class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
-        Contact
+      <a class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="/login">
+        Login
       </a>
     </div>
   </nav>
