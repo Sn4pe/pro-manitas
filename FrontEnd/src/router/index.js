@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
-import User from "@/views/User/User.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/Register.vue";
+import Profile from "@/views/Profile.vue";
+import Provider from "@/views/Provider.vue";
+import ProviderId from "@/views/ProviderId.vue";
 
 
 const routes = [
@@ -17,14 +19,24 @@ const routes = [
     component: Login,
   },
   {
+    path: '/profile',
+    name: 'profile',
+    component: Profile,
+  },
+  {
     path: '/register',
     name: 'register',
     component: Register,
   },
   {
-    path: "/admin/usuario",
-    name: "AdminUser",
-    component: User,
+    path: "/provider",
+    name: "provider",
+    component: Provider,
+  },
+  {
+    path: "/provider/:id",
+    name: "providerId",
+    component: ProviderId,
   },
 ]
 

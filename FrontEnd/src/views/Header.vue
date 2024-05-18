@@ -1,52 +1,48 @@
-<script setup>
-
-</script>
-
 <template>
-
   <nav class="flex flex-wrap items-center justify-between p-4 bg-secondary">
-    <div class="w-auto lg:order-2 lg:w-1/5 lg:text-center">
-      <a class="text-xl font-semibold font-heading text-ligth_orange" href="#">
-        Pro<strong class="text-melocoton">Manitas</strong>
-      </a>
+
+    <div class="w-full navbar-menu lg:order-1 lg:w-1/12 lg:flex lg:flex-row">
+      <router-link to="/provider" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Servicios</router-link>
+      <router-link to="/provider" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Profesionales</router-link>
     </div>
-    <div class="block lg:hidden">
-      <button class="flex items-center px-3 py-2 text-text-melocoton border border-text-melocoton rounded navbar-burger">
-        <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <title>
-            Menu
-          </title>
-          <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z">
-          </path>
-        </svg>
-      </button>
+
+    <div class="w-auto lg:order-3 lg:w-3/12 lg:text-center">
+      <router-link to="/" class="text-xl font-semibold font-heading text-ligth_orange">Pro<strong class="text-melocoton">Manitas</strong></router-link>
     </div>
-    <div class="hidden w-full navbar-menu lg:order-1 lg:block lg:w-2/5">
-      <a class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
-        Home
-      </a>
-      <a class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
-        Team
-      </a>
-      <a class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
-        Galery
-      </a>
+
+    <div v-if="currentUser" class="hidden w-full navbar-menu lg:order-1 lg:block lg:w-1/12">
+      <router-link v-if="showAdminBoard" to="/admin" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Admin Board</router-link>
+      <router-link v-if="showModeratorBoard" to="/mod" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Moderator Board</router-link>
     </div>
-    <div class="hidden w-full navbar-menu lg:order-3 lg:block lg:w-2/5 lg:text-right">
-      <a class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
-        Content
-      </a>
-      <a class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="#">
-        FAQ
-      </a>
-      <a class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" href="/login">
-        Login
-      </a>
+
+    <div v-if="!currentUser" class="hidden w-full navbar-menu lg:order-3 lg:block lg:w-1/12 lg:text-right lg:flex lg:flex-row">
+      <router-link to="/register" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Sign Up</router-link>
+      <router-link to="/login" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Login</router-link>
+    </div>
+
+    <div v-if="currentUser" class="hidden w-full navbar-menu lg:order-3 lg:block lg:w-1/5 lg:text-right">
+      <router-link to="/profile" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">{{ currentUser.username }}</router-link>
+      <a class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange" @click="logOut">LogOut</a>
     </div>
   </nav>
-
 </template>
 
-<style scoped>
+<script setup>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
+import router from "@/router";
 
-</style>
+const store = useStore();
+
+const currentUser = computed(() => store.state.auth.user);
+
+const showAdminBoard = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_ADMIN'));
+
+const showModeratorBoard = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_MODERATOR'));
+
+const logOut = () => {
+  store.dispatch('auth/logout');
+  router.push('/login');
+};
+
+</script>

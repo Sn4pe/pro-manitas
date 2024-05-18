@@ -31,12 +31,28 @@
 </template>
 
 <script>
+import UserService from "../services/user.service";
 export default {
   methods: {
     scrollToImages() {
       const element = document.getElementById('images');
       element.scrollIntoView({ behavior: 'smooth' });
     },
+  },
+  mounted() {
+    UserService.getPublicContent().then(
+        (response) => {
+          this.content = response.data;
+        },
+        (error) => {
+          this.content =
+              (error.response &&
+                  error.response.data &&
+                  error.response.data.message) ||
+              error.message ||
+              error.toString();
+        }
+    );
   },
 };
 
