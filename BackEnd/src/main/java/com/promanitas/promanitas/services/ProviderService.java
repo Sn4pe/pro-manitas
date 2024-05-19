@@ -18,25 +18,25 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProveedorService implements IProviderService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProveedorService.class);
+public class ProviderService implements IProviderService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProviderService.class);
 
     @Autowired
-    IProviderRepository providerRepository;
+    private IProviderRepository providerRepository;
 
     @Autowired
-    IUserRepository userRepository;
+    private IUserRepository userRepository;
 
     @Autowired
-    IRoleRepository roleRepository;
+    private IRoleRepository roleRepository;
 
     @Override
     public List<ProviderEntity> getAllProviders() {
         try {
             return providerRepository.findAll();
         } catch (Exception e) {
-            LOGGER.error("Error while fetching all users: {}", e.getMessage());
-            throw new RuntimeException("Error fetching users");
+            LOGGER.error("Error while fetching all providers: {}", e.getMessage());
+            throw new RuntimeException("Error fetching providers");
         }
     }
 
@@ -45,8 +45,8 @@ public class ProveedorService implements IProviderService {
         try {
             return providerRepository.findById(providerId);
         } catch (Exception e) {
-            LOGGER.error("Error while fetching user by ID: {}", e.getMessage());
-            throw new RuntimeException("Error fetching user by ID");
+            LOGGER.error("Error while fetching provider by ID: {}", e.getMessage());
+            throw new RuntimeException("Error fetching provider by ID");
         }
     }
 
@@ -55,13 +55,8 @@ public class ProveedorService implements IProviderService {
         UserEntity customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with customerId: " + customerId));
 
-        // Crea una nueva instancia de 'ProviderEntity'
         ProviderEntity provider = new ProviderEntity();
-
-        // Asigna el cliente al proveedor
         provider.setUser(customer);
-
-        // Establece las propiedades adicionales
         provider.setDescripcion_servicio(descripcion_servicio);
         provider.setDisponibilidad(disponibilidad);
 
@@ -71,10 +66,10 @@ public class ProveedorService implements IProviderService {
         customer.getRoles().add(providerRole);
         userRepository.save(customer);
 
-        // Guarda el proveedor en la base de datos y lo devuelve
         return providerRepository.save(provider);
     }
 
+    @Override
     public boolean isProvider(Long userId) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with userId: " + userId));

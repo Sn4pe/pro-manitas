@@ -23,7 +23,7 @@ public class ServicioService implements IServicioService {
     IServiceRepository serviceRepository;
 
     @Autowired
-    ProveedorService proveedorService;
+    ProviderService providerService;
 
     @Autowired
     ProviderServicioService providerServicioService;
@@ -59,7 +59,7 @@ public class ServicioService implements IServicioService {
                     new ServiceEntity(serviceEntity.getNombreServicio(), serviceEntity.getDescripcion(), serviceEntity.getTarifas())
             );
 
-            Optional<ProviderEntity> providerOptional = proveedorService.getProviderById(providerId);
+            Optional<ProviderEntity> providerOptional = providerService.getProviderById(providerId);
             if (!providerOptional.isPresent()) {
                 throw new ServiceException("Provider not found");
             }
