@@ -60,7 +60,7 @@ public class ServicioService implements IServicioService {
             );
 
             Optional<ProviderEntity> providerOptional = providerService.getProviderById(providerId);
-            if (!providerOptional.isPresent()) {
+            if (providerOptional.isEmpty()) {
                 throw new ServiceException("Provider not found");
             }
 
