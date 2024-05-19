@@ -14,7 +14,12 @@
             <h4 class="text-md font-semibold mb-2">Nombre del servicio: {{ service.nombreServicio }}</h4>
             <p>Descripción: {{ service.descripcion }}</p>
             <p>Tarifa: {{ service.tarifas }}</p>
+            <p>Propietario: {{ service.propietario }}</p>
+            <p>Disponibilidad: {{ service.disponibilidad ? 'Sí' : 'No' }}</p>
           </router-link>
+          <button v-if="!isProvider" class="mt-2 p-2 text-white bg-green-500 border rounded" @click="contratarServicio(service.id)">
+            Contratar
+          </button>
         </li>
       </ul>
     </div>
@@ -30,18 +35,19 @@ import TokenService from "@/services/token.service";
 
 export default {
   name: "ServiceList",
-  components: { Page },
+  components: {Page},
   setup() {
     const store = useStore();
     const currentUser = computed(() => store.state.auth.user);
     const isProvider = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_PROVIDER'));
 
-    return { isProvider };
+    return {isProvider, currentUser};
   },
   data() {
     return {
       content: [],
-      availabilityFilter: false
+      availabilityFilter: false,
+      message: ""
     };
   },
   computed: {
@@ -65,6 +71,14 @@ export default {
     },
     goToAddService() {
       this.$router.push('/add-service');
+    },
+    contratarServicio(serviceId) {
+      const token = TokenService.getLocalAccessToken();
+      ServicesService.contratarServicio(serviceId, token).then((response) => {
+        this.message = "Servicio contratado con éxito!";
+      }).catch((error) => {
+        this.message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+      });
     }
   }
 };

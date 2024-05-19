@@ -8,6 +8,7 @@ import ProviderId from "@/views/ProviderId.vue";
 import Service from "@/views/Service.vue";
 import ServiceId from "@/views/ServiceId.vue";
 import AddService from "@/views/AddService.vue";
+import MyServices from "@/views/MyServices.vue";
 
 
 const routes = [
@@ -55,6 +56,11 @@ const routes = [
     path: '/add-service',
     name: 'AddService',
     component: AddService
+  },
+  {
+    path: '/my-services',
+    name: 'MyServices',
+    component: MyServices
   }
 ]
 

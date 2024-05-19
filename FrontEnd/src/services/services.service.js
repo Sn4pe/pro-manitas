@@ -49,6 +49,22 @@ class ServicesService {
             }
         });
     }
+
+    contratarServicio(serviceId, token) {
+        return api.post(`/contracts/${serviceId}`, {}, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    }
+
+    getMyServices(token) {
+        return api.get('/contracts/my-services', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    }
 }
 
 export default new ServicesService();
