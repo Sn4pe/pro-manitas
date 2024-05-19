@@ -18,12 +18,11 @@ import com.promanitas.promanitas.security.services.RefreshTokenService;
 import com.promanitas.promanitas.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -38,143 +37,116 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-  @Autowired
-  AuthenticationManager authenticationManager;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-  @Autowired
-  IUserRepository userRepository;
+    @Autowired
+    IUserRepository userRepository;
 
-  @Autowired
-  IRoleRepository roleRepository;
+    @Autowired
+    IRoleRepository roleRepository;
 
-  @Autowired
-  PasswordEncoder encoder;
+    @Autowired
+    PasswordEncoder encoder;
 
-  @Autowired
-  JwtUtils jwtUtils;
+    @Autowired
+    JwtUtils jwtUtils;
 
-  @Autowired
-  RefreshTokenService refreshTokenService;
+    @Autowired
+    RefreshTokenService refreshTokenService;
 
-//  @PostMapping("/signin")
-//  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-//
-//    Authentication authentication = authenticationManager
-//        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-//
-//    SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-//
-//    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-//
-//    List<String> roles = userDetails.getAuthorities().stream()
-//        .map(item -> item.getAuthority())
-//        .collect(Collectors.toList());
-//
-//    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-//        .body(new UserInfoResponse(userDetails.getId(),
-//                                   userDetails.getUsername(),
-//                                   userDetails.getEmail(),
-//                                   roles));
-//  }
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-  @PostMapping("/signin")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    Authentication authentication = authenticationManager
-            .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(userDetails);
 
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
-    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-    List<String> roles = userDetails.getAuthorities().stream()
-            .map(item -> item.getAuthority())
-            .collect(Collectors.toList());
-
-    RefreshTokenEntity refreshTokenEntity = refreshTokenService.createRefreshToken(userDetails.getId());
-
-    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-            .body(new JwtResponse(jwtCookie.getValue(), refreshTokenEntity.getToken(), userDetails.getId(),
-                    userDetails.getUsername(), userDetails.getEmail(), roles));
-  }
-
-  @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Username ya está registrado!"));
+        return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
+                userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return ResponseEntity.badRequest().body(new MessageResponse("Error: Email ya está en uso!"));
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username ya está registrado!"));
+        }
+
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email ya está en uso!"));
+        }
+
+        UserEntity user = new UserEntity(signUpRequest.getUsername(), signUpRequest.getEmail(),
+                encoder.encode(signUpRequest.getPassword()));
+
+        Set<String> strRoles = signUpRequest.getRole();
+        Set<RoleEntity> roles = new HashSet<>();
+
+        if (strRoles == null) {
+            RoleEntity userRole = roleRepository.findByName(ERole.ROLE_CUSTOMER)
+                    .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
+                        roles.add(adminRole);
+
+                        break;
+                    case "provider":
+                        RoleEntity modRole = roleRepository.findByName(ERole.ROLE_PROVIDER)
+                                .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
+                        roles.add(modRole);
+
+                        break;
+                    default:
+                        RoleEntity userRole = roleRepository.findByName(ERole.ROLE_CUSTOMER)
+                                .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
+                        roles.add(userRole);
+                }
+            });
+        }
+
+        user.setRoles(roles);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponse("Usuario registrado con éxito"));
     }
 
-    UserEntity user = new UserEntity(signUpRequest.getUsername(),
-                         signUpRequest.getEmail(),
-                         encoder.encode(signUpRequest.getPassword()));
+    @PostMapping("/refreshtoken")
+    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
 
-    Set<String> strRoles = signUpRequest.getRole();
-    Set<RoleEntity> roles = new HashSet<>();
-
-    if (strRoles == null) {
-      RoleEntity userRole = roleRepository.findByName(ERole.ROLE_CUSTOMER)
-          .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
-      roles.add(userRole);
-    } else {
-        strRoles.forEach(role -> {
-            switch (role) {
-                case "admin":
-                    RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
-                    roles.add(adminRole);
-                    break;
-                case "provider":
-                    RoleEntity providerRole = roleRepository.findByName(ERole.ROLE_PROVIDER)
-                            .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
-                    roles.add(providerRole);
-                    break;
-                case "customer":
-                    RoleEntity customerRole = roleRepository.findByName(ERole.ROLE_CUSTOMER)
-                            .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
-                    roles.add(customerRole);
-                    break;
-                default:
-                    RoleEntity guestRole = roleRepository.findByName(ERole.ROLE_GUEST)
-                            .orElseThrow(() -> new RuntimeException("Error: No se encontró el rol."));
-                    roles.add(guestRole);
-            }
-        });
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshTokenEntity::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "¡El token de actualización no está en la base de datos!"));
     }
 
-    user.setRoles(roles);
-    userRepository.save(user);
+    @PostMapping("/signout")
+    public ResponseEntity<?> logoutUser() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userDetails.getId();
+        refreshTokenService.deleteByUserId(userId);
+        return ResponseEntity.ok(new MessageResponse("¡Has cerrado sesión!"));
+    }
 
-    return ResponseEntity.ok(new MessageResponse("Usuario registrado con éxito!"));
-  }
-
-  @PostMapping("/refreshtoken")
-  public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
-    String requestRefreshToken = request.getRefreshToken();
-
-    return refreshTokenService.findByToken(requestRefreshToken)
-            .map(refreshTokenService::verifyExpiration)
-            .map(RefreshTokenEntity::getUser)
-            .map(user -> {
-              String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-              return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
-            })
-            .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                    "¡El token de actualización no está en la base de datos!"));
-  }
-
-  @PostMapping("/signout")
-  public ResponseEntity<?> logoutUser() {
-    ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(new MessageResponse("¡Has cerrado sesión!"));
-  }
 }
+
