@@ -13,4 +13,5 @@ public interface IServicioService {
     ServiceEntity updateServicio(Long id, ServiceEntity servicio);
     void deleteServicio(Long id);
     ServiceEntity createService(ServiceEntity serviceEntity, Long providerId) throws ServiceException;
+    boolean isOwner(Long serviceId, Long userId);
 }

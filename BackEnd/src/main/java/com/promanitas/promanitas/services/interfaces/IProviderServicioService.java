@@ -2,13 +2,12 @@ package com.promanitas.promanitas.services.interfaces;
 
 import com.promanitas.promanitas.entities.ProviderServiceEntity;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface IProviderServicioService {
 
-    List<ProviderServiceEntity> getAllServicios();
 
-
-    ProviderServiceEntity saveProviderService(ProviderServiceEntity servicio);
+    Optional<ProviderServiceEntity> getByServiceId(Long serviceId);
+    void saveProviderService(ProviderServiceEntity servicio);
 
 }

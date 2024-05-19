@@ -76,4 +76,19 @@ public class ServiceController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @PreAuthorize("hasRole('PROVIDER')")
+    @GetMapping("/{id}/isOwner")
+    public ResponseEntity<Boolean> isOwner(@PathVariable("id") Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getId();
+
+        try {
+            boolean isOwner = servicioService.isOwner(id, userId);
+            return new ResponseEntity<>(isOwner, HttpStatus.OK);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

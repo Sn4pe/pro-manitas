@@ -89,4 +89,18 @@ public class ServicioService implements IServicioService {
             throw new ServiceException("Error creating service");
         }
     }
+
+    @Override
+    public boolean isOwner(Long serviceId, Long userId) {
+        // Buscar la relación entre proveedor y servicio
+        Optional<ProviderServiceEntity> providerServiceEntityOptional = providerServicioService.getByServiceId(serviceId);
+
+        if (providerServiceEntityOptional.isPresent()) {
+            ProviderServiceEntity providerServiceEntity = providerServiceEntityOptional.get();
+            // Verificar si el ID del proveedor coincide con el ID del usuario
+            return providerServiceEntity.getProveedor().getId().equals(userId);
+        }
+
+        return false;
+    }
 }
