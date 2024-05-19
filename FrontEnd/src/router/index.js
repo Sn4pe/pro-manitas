@@ -5,7 +5,9 @@ import Register from "@/views/Register.vue";
 import Profile from "@/views/Profile.vue";
 import Provider from "@/views/Provider.vue";
 import ProviderId from "@/views/ProviderId.vue";
-import Management from "@/views/Management.vue";
+import Service from "@/views/Service.vue";
+import ServiceId from "@/views/ServiceId.vue";
+import AddService from "@/views/AddService.vue";
 
 
 const routes = [
@@ -40,10 +42,20 @@ const routes = [
     component: ProviderId,
   },
   {
-    path: "/management",
-    name: "Management",
-    component: Management,
+    path: "/service",
+    name: "service",
+    component: Service,
   },
+  {
+    path: "/service/:id",
+    name: "serviceId",
+    component: ServiceId,
+  },
+  {
+    path: '/add-service',
+    name: 'AddService',
+    component: AddService
+  }
 ]
 
 const router = createRouter({
