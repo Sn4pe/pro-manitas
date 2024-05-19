@@ -2,7 +2,11 @@ import api from './api';
 import http from "@/services/api";
 
 class ServicesService {
-    getAllServices(token) {
+    getAllServices() {
+        return api.get('/services');
+    }
+
+    getAllServicesWithAuth(token) {
         return api.get('/services', {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -10,12 +14,8 @@ class ServicesService {
         });
     }
 
-    getService(id, token) {
-        return http.get(`/services/${id}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+    getService(id) {
+        return http.get(`/services/${id}`);
     }
 
     createService(service, token) {

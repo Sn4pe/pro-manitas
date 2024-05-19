@@ -1,9 +1,11 @@
 <template>
   <nav class="flex flex-wrap items-center justify-between p-4 bg-secondary">
 
-    <div class="w-full navbar-menu lg:order-1 lg:w-1/12 lg:flex lg:flex-row">
+    <div class="w-full navbar-menu lg:order-1 lg:w-3/12 lg:flex lg:flex-row">
       <router-link to="/service" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Servicios</router-link>
-      <router-link to="/provider" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Profesionales</router-link>
+      <router-link to="/provider" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Profesionales</router-link>
+      <router-link v-if="showModeratorBoard" to="/my-services" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Mis servicios</router-link>
+
     </div>
 
     <div class="w-auto lg:order-3 lg:w-3/12 lg:text-center">

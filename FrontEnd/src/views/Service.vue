@@ -4,7 +4,7 @@
       <h3 class="text-lg font-bold mb-4">Lista de Servicios</h3>
 
       <div class="flex justify-end w-full" v-if="isProvider">
-        <button class="bg-primary my-2 hover:bg-ligth_orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="goToAddService">
+        <button class="bg-primary my-2 hover:bg-light_orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="goToAddService">
           Añadir Servicio
         </button>
       </div>
@@ -14,21 +14,22 @@
             <h4 class="text-md font-semibold mb-2">Nombre del servicio: {{ service.nombreServicio }}</h4>
             <p>Descripción: {{ service.descripcion }}</p>
             <p>Tarifa: {{ service.tarifas }}</p>
-            <p>Propietario: {{ service.propietario }}</p>
-            <p>Disponibilidad: {{ service.disponibilidad ? 'Sí' : 'No' }}</p>
           </router-link>
-          <button v-if="!isProvider" class="mt-2 p-2 text-white bg-green-500 border rounded" @click="contratarServicio(service.id)">
+          <button v-if="isCustomer" class="mt-2 p-2 text-white bg-green-500 border rounded" @click="contratarServicio(service.id)">
             Contratar
           </button>
         </li>
       </ul>
+      <div v-if="message" class="mt-4 text-center">
+        <p>{{ message }}</p>
+      </div>
     </div>
   </Page>
 </template>
 
 <script>
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+import {computed} from 'vue';
+import {useStore} from 'vuex';
 import ServicesService from "@/services/services.service";
 import Page from "@/views/Page.vue";
 import TokenService from "@/services/token.service";
@@ -40,8 +41,9 @@ export default {
     const store = useStore();
     const currentUser = computed(() => store.state.auth.user);
     const isProvider = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_PROVIDER'));
+    const isCustomer = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_CUSTOMER'));
 
-    return {isProvider, currentUser};
+    return {isProvider, isCustomer, currentUser};
   },
   data() {
     return {
@@ -63,19 +65,32 @@ export default {
   methods: {
     fetchServices() {
       const token = TokenService.getLocalAccessToken();
-      ServicesService.getAllServices(token).then((response) => {
-        this.content = response.data;
-      }, (error) => {
-        this.content = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
-      });
+      if (token) {
+        ServicesService.getAllServicesWithAuth(token).then((response) => {
+          this.content = response.data;
+        }, (error) => {
+          this.content = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+        });
+      } else {
+        ServicesService.getAllServices().then((response) => {
+          this.content = response.data;
+        }, (error) => {
+          this.content = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+        });
+      }
     },
     goToAddService() {
       this.$router.push('/add-service');
     },
     contratarServicio(serviceId) {
       const token = TokenService.getLocalAccessToken();
-      ServicesService.contratarServicio(serviceId, token).then((response) => {
-        this.message = "Servicio contratado con éxito!";
+      if (!token) {
+        this.message = "Debes iniciar sesión para contratar un servicio.";
+        return;
+      }
+      ServicesService.contratarServicio(serviceId, token).then(() => {
+        this.message = "¡Servicio contratado con éxito!";
+        this.$router.push('/my-services');
       }).catch((error) => {
         this.message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
       });
@@ -83,3 +98,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.text-light_orange {
+  color: #FFA500;
+}
+</style>
