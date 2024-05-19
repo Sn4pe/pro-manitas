@@ -45,6 +45,13 @@ public class ProviderController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProviderEntity> getTutorialById(@PathVariable("id") long id) {
+        Optional<ProviderEntity> tutorialData = providerService.getProviderById(id);
+
+        return tutorialData.map(tutorial -> new ResponseEntity<>(tutorial, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
     @GetMapping("/{userId}/isProvider")
     public ResponseEntity<?> checkIfProvider(@PathVariable Long userId) {
