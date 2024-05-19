@@ -15,16 +15,16 @@
     <h2 class="text-3xl font-bold p-6">Los mejores especialistas y mucho más en España</h2>
     <div class="flex flex-col justify-center">
       <div class="flex flex-wrap justify-center">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa1">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa2">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa3">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa4">
+        <img class="rounded-image" src="../assets/imagenes/Albañil.webp" alt="empresa1">
+        <img class="rounded-image" src="../assets/imagenes/Electricista.webp" alt="empresa2">
+        <img class="rounded-image" src="../assets/imagenes/Fontanero.webp" alt="empresa3">
+        <img class="rounded-image" src="../assets/imagenes/Informatico.webp" alt="empresa4">
       </div>
       <div class="flex flex-wrap justify-center">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa5">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa6">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa7">
-        <img class="rounded-image" src="https://placehold.co/400" alt="empresa8">
+        <img class="rounded-image" src="../assets/imagenes/Limpieza.webp" alt="empresa5">
+        <img class="rounded-image" src="../assets/imagenes/Pintor.webp" alt="empresa6">
+        <img class="rounded-image" src="../assets/imagenes/Babysitter.webp" alt="empresa7">
+        <img class="rounded-image" src="../assets/imagenes/Reparto.webp" alt="empresa8">
       </div>
     </div>
   </div>

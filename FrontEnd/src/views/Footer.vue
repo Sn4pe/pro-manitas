@@ -17,12 +17,12 @@
           </a>
         </li>
         <li class="my-2">
-          <a class="text-text-melocoton hover:text-ligth_orange transition-colors duration-200" href="#">
+          <a class="text-text-melocoton hover:text-ligth_orange transition-colors duration-200" href="https://github.com/Sn4pe/pro-manitas">
             Github
           </a>
         </li>
         <li class="my-2">
-          <a class="text-text-melocoton hover:text-ligth_orange transition-colors duration-200" href="#">
+          <a class="text-text-melocoton hover:text-ligth_orange transition-colors duration-200" href="https://es.linkedin.com/">
             LinkedIn
           </a>
         </li>
