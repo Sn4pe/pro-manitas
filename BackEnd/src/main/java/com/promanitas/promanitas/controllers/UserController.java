@@ -5,7 +5,6 @@ import com.promanitas.promanitas.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -52,10 +51,19 @@ public class UserController {
         try {
             UserEntity updatedUser = userService.updateUser(id, newUser);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-        } catch (UsernameNotFoundException e) {
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping("/update-email/{id}")
+    public ResponseEntity<UserEntity> updateEmail(@PathVariable("id") Long id, @RequestBody HashMap<String, String> emailMap) {
+        try {
+            String newEmail = emailMap.get("email");
+            UserEntity updatedUser = userService.updateEmail(id, newEmail);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -64,8 +72,8 @@ public class UserController {
         try {
             HashMap<String, String> response = userService.deleteUser(id);
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 

@@ -72,6 +72,14 @@ public class UserDetailsServiceImpl implements UserDetailsService, IUserService 
     public Boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
+
+    @Override
+    public UserEntity updateEmail(Long userId, String newEmail) {
+        return userRepository.findById(userId).map(user -> {
+            user.setEmail(newEmail);
+            return userRepository.save(user);
+        }).orElseThrow(() -> new UsernameNotFoundException("User Not Found with id: " + userId));
+    }
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
