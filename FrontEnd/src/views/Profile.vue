@@ -36,7 +36,7 @@
             <label class="py-2 mt-4" for="disponibilidad">Disponibilidad:</label>
             <input class="inputCustom" v-model="provider.disponibilidad" id="disponibilidad" type="checkbox"/>
           </div>
-          <button type="submit">Crear proveedor</button>
+          <button type="submit" class="bg-primary my-2 hover:bg-ligth_orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Convertir en proveedor</button>
           <div v-if="message" class="alert alert-danger" role="alert">
             {{ message }}
           </div>
