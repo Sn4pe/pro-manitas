@@ -2,7 +2,7 @@
 
 ## Configurar Spring Datasource, JPA, App properties
 Abrir `src/main/resources/application.properties`
-
+modificar usuario y contraseña si es necesario
 ```properties
 
 spring.datasource.username= root
