@@ -58,6 +58,7 @@ public class ServiceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('PROVIDER')")
     public ResponseEntity<ServiceEntity> updateServicio(@PathVariable("id") Long id, @RequestBody ServiceEntity servicio) {
         try {
             ServiceEntity updatedServicio = servicioService.updateServicio(id, servicio);
@@ -68,6 +69,7 @@ public class ServiceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('PROVIDER')")
     public ResponseEntity<HttpStatus> deleteServicio(@PathVariable("id") Long id) {
         try {
             servicioService.deleteServicio(id);
@@ -76,7 +78,6 @@ public class ServiceController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @PreAuthorize("hasRole('PROVIDER')")
     @GetMapping("/{id}/isOwner")
     public ResponseEntity<Boolean> isOwner(@PathVariable("id") Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
