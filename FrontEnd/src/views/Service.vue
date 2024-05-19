@@ -3,7 +3,7 @@
     <div class="w-1/2 p-6">
       <h3 class="text-lg font-bold mb-4">Lista de Servicios</h3>
 
-      <div class="flex justify-end w-full">
+      <div class="flex justify-end w-full" v-if="isProvider">
         <button class="bg-primary my-2 hover:bg-ligth_orange text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="goToAddService">
           Añadir Servicio
         </button>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 import ServicesService from "@/services/services.service";
 import Page from "@/views/Page.vue";
 import TokenService from "@/services/token.service";
@@ -29,6 +31,13 @@ import TokenService from "@/services/token.service";
 export default {
   name: "ServiceList",
   components: { Page },
+  setup() {
+    const store = useStore();
+    const currentUser = computed(() => store.state.auth.user);
+    const isProvider = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_PROVIDER'));
+
+    return { isProvider };
+  },
   data() {
     return {
       content: [],
