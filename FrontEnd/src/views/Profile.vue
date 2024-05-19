@@ -35,7 +35,7 @@
           <label class="py-2 mt-4" for="disponibilidad">Disponibilidad:</label>
           <input class="inputCustom" v-model="provider.disponibilidad" id="disponibilidad" type="checkbox"/>
         </div>
-        <button type="submit">Crear proveedor</button>
+        <button type="submit"><strong class="text-ligth_orange">Crear proveedor</strong></button>
         <div v-if="message" class="alert alert-danger" role="alert">
           {{ message }}
         </div>
@@ -46,19 +46,19 @@
 
 <script>
 import Page from "@/views/Page.vue";
-import ProviderService from "@/services/provider.service";
 import TokenService from "@/services/token.service";
 import AuthService from "@/services/auth.service";
 
 export default {
   name: 'Profile',
-  components: { Page},
+  components: { Page },
   data() {
     return {
       provider: {
         descripcion_servicio: '',
         disponibilidad: false
-      }
+      },
+      message: ''
     };
   },
   computed: {
@@ -77,12 +77,26 @@ export default {
 
         TokenService.updateLocalAccessToken(accessToken);
 
-        const response = await ProviderService.createProvider(this.currentUser?.id, this.provider, accessToken);
+        const response = await fetch(`http://localhost:8000/api/provider/create/${this.currentUser?.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(this.provider)
+        });
 
+        if (!response.ok) {
+          throw new Error('Error en la creación del proveedor');
+        }
+
+        const data = await response.json();
         console.log("Data sent:", this.currentUser?.id, this.provider, accessToken);
-        console.log(response);
+        console.log(data);
+        this.message = 'Proveedor creado con éxito';
       } catch (error) {
         console.error(error);
+        this.message = error.message;
 
         if (error.response && error.response.status === 401) {
           this.$router.push('/login');
