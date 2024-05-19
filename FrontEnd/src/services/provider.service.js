@@ -22,6 +22,15 @@ class ProviderService {
     async checkIfProvider(userId) {
         return await api.get(`/provider/${userId}/isProvider`);
     }
+
+    updateProvider(userId, provider, token){
+
+        return api.put(`/provider/update/${userId}`, provider, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    }
 }
 
 export default new ProviderService();

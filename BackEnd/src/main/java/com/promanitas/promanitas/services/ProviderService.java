@@ -77,4 +77,14 @@ public class ProviderService implements IProviderService {
         return user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals(ERole.ROLE_PROVIDER));
     }
+    
+	@Override
+	public ProviderEntity updateProvider(Long userId, ProviderEntity provider) {
+		
+			return providerRepository.findById(userId).map(existingProvider -> {
+				existingProvider.setDescripcion_servicio(provider.getDescripcion_servicio());
+				existingProvider.setDisponibilidad(provider.getDisponibilidad());
+				return providerRepository.save(existingProvider);
+				}).orElseThrow(() -> new RuntimeException("Service not found with id " + userId));
+	}
 }

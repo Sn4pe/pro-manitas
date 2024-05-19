@@ -59,5 +59,16 @@ public class ProviderController {
         return ResponseEntity.ok(Collections.singletonMap("isProvider", isProvider));
     }
     
-    
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<ProviderEntity> updateProvider(@PathVariable Long userId, @RequestBody ProviderEntity provider) {
+      
+        try {
+        	
+        	ProviderEntity providerResponse = providerService.updateProvider(userId, provider);
+            return new ResponseEntity<>(providerResponse, HttpStatus.CREATED);
+            
+        } catch(Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 }

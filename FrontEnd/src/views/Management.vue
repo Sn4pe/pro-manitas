@@ -41,8 +41,16 @@
       this.getProviderInfo();
     },
     methods: {
-      updateServices(){
-        
+      async updateServices(){
+        const userId = this.currentUser.id;
+        const updateProvider = this.updateUser;
+        const token = this.currentUser.accessToken;
+        try{
+            const response = await providerService.updateProvider(userId, updateProvider, token);
+            this.message = response.data.message;
+        } catch (error) {
+          this.message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+        }
       },
       async getProviderInfo(){
         const userId = this.currentUser.id;

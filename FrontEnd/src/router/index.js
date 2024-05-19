@@ -9,6 +9,7 @@ import Service from "@/views/Service.vue";
 import ServiceId from "@/views/ServiceId.vue";
 import AddService from "@/views/AddService.vue";
 import MyServices from "@/views/MyServices.vue";
+import Management from "@/views/Management.vue";
 
 
 const routes = [
@@ -61,7 +62,12 @@ const routes = [
     path: '/my-services',
     name: 'MyServices',
     component: MyServices
-  }
+  },
+  {
+    path: "/management",
+    name: "Management",
+    component: Management,
+  },
 ]
 
 const router = createRouter({
