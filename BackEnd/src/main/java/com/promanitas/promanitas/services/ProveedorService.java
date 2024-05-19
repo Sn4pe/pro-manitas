@@ -59,7 +59,7 @@ public class ProveedorService implements IProviderService {
         ProviderEntity provider = new ProviderEntity();
 
         // Asigna el cliente al proveedor
-        provider.setuser(customer);
+        provider.setUser(customer);
 
         // Establece las propiedades adicionales
         provider.setDescripcion_servicio(descripcion_servicio);

@@ -40,7 +40,8 @@ public class ProviderEntity {
         return user;
     }
 
-    public void setuser(UserEntity user) {
+
+    public void setUser(UserEntity user) {
         this.user = user;
     }
 
