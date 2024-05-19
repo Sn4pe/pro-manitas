@@ -5,7 +5,6 @@ import com.promanitas.promanitas.entities.ProviderServiceEntity;
 import com.promanitas.promanitas.entities.ServiceEntity;
 import com.promanitas.promanitas.repos.IServiceRepository;
 import com.promanitas.promanitas.services.interfaces.IServicioService;
-import jakarta.validation.Valid;
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,21 +19,21 @@ public class ServicioService implements IServicioService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServicioService.class);
 
     @Autowired
-    IServiceRepository serviceRepository;
+    private IServiceRepository serviceRepository;
 
     @Autowired
-    ProviderService providerService;
+    private ProviderService providerService;
 
     @Autowired
-    ProviderServicioService providerServicioService;
+    private ProviderServicioService providerServicioService;
 
     @Override
     public List<ServiceEntity> getAllServicios() {
         try {
             return serviceRepository.findAll();
         } catch (Exception e) {
-            LOGGER.error("Error while fetching all users: {}", e.getMessage());
-            throw new RuntimeException("Error fetching users");
+            LOGGER.error("Error while fetching all services: {}", e.getMessage());
+            throw new RuntimeException("Error fetching services");
         }
     }
 
@@ -43,16 +42,17 @@ public class ServicioService implements IServicioService {
         try {
             return serviceRepository.findById(id);
         } catch (Exception e) {
-            LOGGER.error("Error while fetching user by ID: {}", e.getMessage());
-            throw new RuntimeException("Error fetching user by ID");
+            LOGGER.error("Error while fetching service by ID: {}", e.getMessage());
+            throw new RuntimeException("Error fetching service by ID");
         }
     }
 
     @Override
-    public ServiceEntity saveServicio(@Valid ServiceEntity servicio) {
+    public ServiceEntity saveServicio(ServiceEntity servicio) {
         return serviceRepository.save(servicio);
     }
 
+    @Override
     public ServiceEntity createService(ServiceEntity serviceEntity, Long providerId) throws ServiceException {
         try {
             ServiceEntity service = this.saveServicio(
@@ -65,9 +65,8 @@ public class ServicioService implements IServicioService {
             }
 
             ProviderEntity provider = providerOptional.get();
-
-            ProviderServiceEntity providerService = new ProviderServiceEntity(null, provider, service);
-            providerServicioService.saveProviderService(providerService);
+            ProviderServiceEntity providerServiceEntity = new ProviderServiceEntity(null, provider, service);
+            providerServicioService.saveProviderService(providerServiceEntity);
 
             return service;
         } catch (Exception e) {

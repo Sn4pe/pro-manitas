@@ -2,7 +2,7 @@ package com.promanitas.promanitas.controllers;
 
 import com.promanitas.promanitas.entities.ServiceEntity;
 import com.promanitas.promanitas.security.services.UserDetailsImpl;
-import com.promanitas.promanitas.services.ServicioService;
+import com.promanitas.promanitas.services.interfaces.IServicioService;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,14 +20,13 @@ import java.util.Optional;
 @RequestMapping("/api/service")
 public class ServiceController {
     @Autowired
-    ServicioService servicioService;
-
+    private IServicioService servicioService;
 
     @GetMapping("/all")
     public ResponseEntity<List<ServiceEntity>> allAccess() {
         try {
-            List<ServiceEntity> providers = servicioService.getAllServicios();
-            return new ResponseEntity<>(providers, HttpStatus.OK);
+            List<ServiceEntity> services = servicioService.getAllServicios();
+            return new ResponseEntity<>(services, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -49,12 +48,10 @@ public class ServiceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceEntity> getTutorialById(@PathVariable("id") long id) {
+    public ResponseEntity<ServiceEntity> getServiceById(@PathVariable("id") long id) {
         Optional<ServiceEntity> serviceData = servicioService.getServicioById(id);
 
         return serviceData.map(service -> new ResponseEntity<>(service, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
-
 }
