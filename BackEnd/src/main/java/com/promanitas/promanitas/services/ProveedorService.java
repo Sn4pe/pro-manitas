@@ -20,6 +20,7 @@ import java.util.Optional;
 @Service
 public class ProveedorService implements IProviderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProveedorService.class);
+
     @Autowired
     IProviderRepository providerRepository;
 
@@ -72,5 +73,13 @@ public class ProveedorService implements IProviderService {
 
         // Guarda el proveedor en la base de datos y lo devuelve
         return providerRepository.save(provider);
+    }
+
+    public boolean isProvider(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with userId: " + userId));
+
+        return user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(ERole.ROLE_PROVIDER));
     }
 }
