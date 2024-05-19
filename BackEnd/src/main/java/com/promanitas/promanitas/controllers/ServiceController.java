@@ -17,41 +17,63 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/service")
+@RequestMapping("/api/services")
 public class ServiceController {
     @Autowired
     private IServicioService servicioService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<ServiceEntity>> allAccess() {
+    @GetMapping
+    public ResponseEntity<List<ServiceEntity>> getAllServicios() {
         try {
-            List<ServiceEntity> services = servicioService.getAllServicios();
-            return new ResponseEntity<>(services, HttpStatus.OK);
+            List<ServiceEntity> servicios = servicioService.getAllServicios();
+            return new ResponseEntity<>(servicios, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/create")
+    @GetMapping("/{id}")
+    public ResponseEntity<ServiceEntity> getServicioById(@PathVariable("id") Long id) {
+        Optional<ServiceEntity> servicioData = servicioService.getServicioById(id);
+
+        return servicioData.map(servicio -> new ResponseEntity<>(servicio, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping
     @PreAuthorize("hasRole('PROVIDER')")
-    public ResponseEntity<ServiceEntity> createService(@RequestBody ServiceEntity serviceEntity) {
+    public ResponseEntity<ServiceEntity> createServicio(@RequestBody ServiceEntity serviceEntity) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             Long providerId = userDetails.getId();
 
-            ServiceEntity service = servicioService.createService(serviceEntity, providerId);
-            return new ResponseEntity<>(service, HttpStatus.CREATED);
+            ServiceEntity newServicio = servicioService.createService(serviceEntity, providerId);
+            return new ResponseEntity<>(newServicio, HttpStatus.CREATED);
         } catch (ServiceException e) {
             return new ResponseEntity<>(null, e.getMessage().equals("Provider not found") ? HttpStatus.NOT_FOUND : HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ServiceEntity> getServiceById(@PathVariable("id") long id) {
-        Optional<ServiceEntity> serviceData = servicioService.getServicioById(id);
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceEntity> updateServicio(@PathVariable("id") Long id, @RequestBody ServiceEntity servicio) {
+        try {
+            ServiceEntity updatedServicio = servicioService.updateServicio(id, servicio);
+            return new ResponseEntity<>(updatedServicio, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
 
-        return serviceData.map(service -> new ResponseEntity<>(service, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteServicio(@PathVariable("id") Long id) {
+        try {
+            servicioService.deleteServicio(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
