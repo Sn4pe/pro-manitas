@@ -5,6 +5,7 @@ import Register from "@/views/Register.vue";
 import Profile from "@/views/Profile.vue";
 import Provider from "@/views/Provider.vue";
 import ProviderId from "@/views/ProviderId.vue";
+import Management from "@/views/Management.vue";
 
 
 const routes = [
@@ -37,6 +38,11 @@ const routes = [
     path: "/provider/:id",
     name: "providerId",
     component: ProviderId,
+  },
+  {
+    path: "/management",
+    name: "Management",
+    component: Management,
   },
 ]
 

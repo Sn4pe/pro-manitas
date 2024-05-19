@@ -58,4 +58,6 @@ public class ProviderController {
         boolean isProvider = providerService.isProvider(userId);
         return ResponseEntity.ok(Collections.singletonMap("isProvider", isProvider));
     }
+    
+    
 }

@@ -2,7 +2,7 @@
   <nav class="flex flex-wrap items-center justify-between p-4 bg-secondary">
 
     <div class="w-full navbar-menu lg:order-1 lg:w-1/12 lg:flex lg:flex-row">
-      <router-link to="/provider" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Servicios</router-link>
+      <router-link to="/service" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Servicios</router-link>
       <router-link to="/provider" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Profesionales</router-link>
     </div>
 
@@ -12,7 +12,7 @@
 
     <div v-if="currentUser" class="hidden w-full navbar-menu lg:order-1 lg:block lg:w-1/12">
       <router-link v-if="showAdminBoard" to="/admin" class="block mt-4 mr-10 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Admin Board</router-link>
-      <router-link v-if="showModeratorBoard" to="/mod" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Moderator Board</router-link>
+      <router-link v-if="showModeratorBoard" to="/management" class="block mt-4 text-text-melocoton lg:inline-block lg:mt-0 hover:text-ligth_orange">Gestión Profesional</router-link>
     </div>
 
     <div v-if="!currentUser" class="hidden w-full navbar-menu lg:order-3 lg:block lg:w-1/12 lg:text-right lg:flex lg:flex-row">
@@ -38,7 +38,7 @@ const currentUser = computed(() => store.state.auth.user);
 
 const showAdminBoard = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_ADMIN'));
 
-const showModeratorBoard = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_MODERATOR'));
+const showModeratorBoard = computed(() => currentUser.value && currentUser.value.roles && currentUser.value.roles.includes('ROLE_PROVIDER'));
 
 const logOut = () => {
   store.dispatch('auth/logout');

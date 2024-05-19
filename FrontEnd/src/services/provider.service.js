@@ -6,8 +6,9 @@ class ProviderService {
     getAllProviders() {
         return api.get('/provider/all');
     }
+
     getProvider(id) {
-        return http.get(`/provider/${id}`);
+        return api.get(`/provider/${id}`);
     }
 
     createProvider(userId, provider, token) {
