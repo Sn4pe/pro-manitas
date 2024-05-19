@@ -28,8 +28,6 @@ class AuthService {
             password
         });
     }
-
-
 }
 
 export default new AuthService();

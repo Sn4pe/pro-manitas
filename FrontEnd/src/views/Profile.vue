@@ -26,75 +26,76 @@
         <li v-for="role in currentUser?.roles" :key="role">{{ role }}</li>
       </ul>
 
-      <form @submit.prevent="createProvider">
-        <div>
-          <label class="py-2 mt-4" for="descripcion_servicio">Descripción del servicio:</label>
-          <input class="inputCustom" v-model="provider.descripcion_servicio" id="descripcion_servicio" type="text" required/>
-        </div>
-        <div>
-          <label class="py-2 mt-4" for="disponibilidad">Disponibilidad:</label>
-          <input class="inputCustom" v-model="provider.disponibilidad" id="disponibilidad" type="checkbox"/>
-        </div>
-        <button type="submit">Crear proveedor</button>
-        <div v-if="message" class="alert alert-danger" role="alert">
-          {{ message }}
-        </div>
-      </form>
+      <div v-if="!isProvider">
+        <form @submit.prevent="createProvider">
+          <div>
+            <label class="py-2 mt-4" for="descripcion_servicio">Descripción del servicio:</label>
+            <input class="inputCustom" v-model="provider.descripcion_servicio" id="descripcion_servicio" type="text" required/>
+          </div>
+          <div>
+            <label class="py-2 mt-4" for="disponibilidad">Disponibilidad:</label>
+            <input class="inputCustom" v-model="provider.disponibilidad" id="disponibilidad" type="checkbox"/>
+          </div>
+          <button type="submit">Crear proveedor</button>
+          <div v-if="message" class="alert alert-danger" role="alert">
+            {{ message }}
+          </div>
+        </form>
+      </div>
     </div>
   </Page>
 </template>
 
 <script>
-import Page from "@/views/Page.vue";
 import ProviderService from "@/services/provider.service";
-import TokenService from "@/services/token.service";
-import AuthService from "@/services/auth.service";
+import Page from "@/views/Page.vue";
 
 export default {
-  name: 'Profile',
-  components: { Page},
+  components: {Page},
   data() {
     return {
+      currentUser: null,
       provider: {
-        descripcion_servicio: '',
-        disponibilidad: false
-      }
+        descripcion_servicio: "",
+        disponibilidad: false,
+      },
+      message: "",
+      isProvider: false,
     };
   },
-  computed: {
-    currentUser() {
-      return this.$store.state.auth.user;
+  mounted() {
+    this.currentUser = this.$store.state.auth.user;
+    if (this.currentUser) {
+      this.checkIfProvider();
     }
   },
   methods: {
-    async createProvider() {
+    async checkIfProvider() {
       try {
-        let accessToken = TokenService.getLocalAccessToken();
-        const refreshToken = TokenService.getLocalRefreshToken();
-
-        const refreshResponse = await AuthService.refreshToken(refreshToken);
-        accessToken = refreshResponse.data.accessToken;
-
-        TokenService.updateLocalAccessToken(accessToken);
-
-        const response = await ProviderService.createProvider(this.currentUser?.id, this.provider, accessToken);
-
-        console.log("Data sent:", this.currentUser?.id, this.provider, accessToken);
-        console.log(response);
+        const response = await ProviderService.checkIfProvider(this.currentUser.id);
+        this.isProvider = response.data.isProvider;
       } catch (error) {
-        console.error(error);
-
-        if (error.response && error.response.status === 401) {
-          this.$router.push('/login');
-        }
+        this.message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString();
       }
-    }
+    },
+    async createProvider() {
+      const userId = this.currentUser.id;
+      const token = this.currentUser.accessToken;
+
+      try {
+        const response = await ProviderService.createProvider(userId, this.provider, token);
+        this.message = response.data.message;
+        this.isProvider = true;
+      } catch (error) {
+        this.message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString();
+      }
+    },
   },
-  mounted() {
-    this.currentUser = TokenService.getUser();
-    if (!this.currentUser) {
-      this.$router.push('/login');
-    }
-  }
 };
 </script>

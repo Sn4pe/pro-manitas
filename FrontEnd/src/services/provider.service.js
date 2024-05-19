@@ -18,6 +18,10 @@ class ProviderService {
             }
         });
     }
+
+    async checkIfProvider(userId) {
+        return await api.get(`/provider/${userId}/isProvider`);
+    }
 }
 
 export default new ProviderService();
