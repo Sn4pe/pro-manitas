@@ -9,12 +9,12 @@
         <p>Tarifa: {{ service.tarifas }}</p>
         <p v-if="service.propietario && service.propietario.user">Propietario: {{ service.propietario.user.username }}</p>
         <div v-if="isOwner">
-          <button class="mb-4 p-2 text-white bg-blue-500 border rounded" @click="enableEditing">Editar</button>
+          <button class="mb-4 p-2 text-white bg-primary border rounded" @click="enableEditing">Editar</button>
           <div v-if="editing">
-            <input v-model="service.nombreServicio" placeholder="Nombre del servicio" />
-            <input v-model="service.descripcion" placeholder="Descripción" />
-            <input v-model="service.tarifas" type="number" placeholder="Tarifa" />
-            <button class="mb-4 p-2 text-white bg-green-500 border rounded" @click="updateService">Guardar</button>
+            <input v-model="service.nombreServicio" placeholder="Nombre del servicio" class="inputshadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline inputCustom mb-4"/>
+            <input v-model="service.descripcion" placeholder="Descripción" class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline inputCustom mb-4"/>
+            <input v-model="service.tarifas" type="number" placeholder="Tarifa" class="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline inputCustom mb-4"/>
+            <button class="mb-4 p-2 text-white bg-primary border rounded" @click="updateService">Guardar</button>
           </div>
         </div>
       </div>
